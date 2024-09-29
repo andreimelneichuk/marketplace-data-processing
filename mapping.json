@@ -1,0 +1,31 @@
+{
+    "properties": {
+      "uuid": { "type": "keyword" },
+      "marketplace_id": { "type": "integer" },
+      "product_id": { "type": "long" },
+      "title": { "type": "text" },
+      "description": { "type": "text" },
+      "brand": { "type": "text" },
+      "seller_id": { "type": "integer" },
+      "seller_name": { "type": "text" },
+      "first_image_url": { "type": "text" },
+      "category_id": { "type": "integer" },
+      "category_lvl_1": { "type": "text" },
+      "category_lvl_2": { "type": "text" },
+      "category_lvl_3": { "type": "text" },
+      "category_remaining": { "type": "text" },
+      "features": { "type": "object" },
+      "rating_count": { "type": "integer" },
+      "rating_value": { "type": "double" },
+      "price_before_discounts": { "type": "float" },
+      "discount": { "type": "float" },
+      "price_after_discounts": { "type": "float" },
+      "bonuses": { "type": "integer" },
+      "sales": { "type": "integer" },
+      "inserted_at": { "type": "date" },
+      "updated_at": { "type": "date" },
+      "currency": { "type": "text" },
+      "barcode": { "type": "long" },
+      "similar_sku": { "type": "nested" }
+    }
+  }

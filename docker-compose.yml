@@ -1,19 +1,19 @@
-version: '3.8'
+
 
 services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: marketplace
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql 
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     deploy:
       resources:
         limits:
-          cpus: '0.5' 
+          cpus: '0.5'
           memory: 512M  
 
   elasticsearch:
@@ -21,16 +21,16 @@ services:
     environment:
       - discovery.type=single-node
     ports:
-      - "9200:9200"
+      - "${ELASTICSEARCH_PORT}:${ELASTICSEARCH_PORT}"
     volumes:
       - es_data:/usr/share/elasticsearch/data
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 2G
+          memory: 3G
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://elasticsearch:9200/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -39,15 +39,11 @@ services:
     build: .
     volumes:
       - .:/app
-      - ./offers.xml:/app/offers.xml 
-    environment:
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_USER: user
-      DATABASE_PASSWORD: password
-      DATABASE_NAME: marketplace
+      - ./offers.xml:/app/offers.xml
+    env_file:
+      - .env
     command: >
-      sh -c "while ! nc -z postgres 5432; do
+      sh -c "while ! nc -z ${DATABASE_HOST} ${DATABASE_PORT}; do
               echo 'Waiting for PostgreSQL...';
               sleep 3;
            done;
@@ -59,23 +55,25 @@ services:
           memory: 1G
 
   elasticsearch-mapping:
-    image: curlimages/curl:latest 
+    image: alpine:3.8
     depends_on:
       elasticsearch:
         condition: service_healthy
     volumes:
       - ./mapping.json:/app/mapping.json
     entrypoint: >
-      sh -c "while ! nc -z elasticsearch 9200; do
-              echo 'Waiting for Elasticsearch...';
-              sleep 3;
-           done;
-           echo 'Elasticsearch is available. Applying index mapping...';
-           curl -X DELETE "http://elasticsearch:9200/products";
-           curl -X PUT 'http://elasticsearch:9200/products/_mapping' \
-               -H 'Content-Type: application/json' \
-               -d @/app/mapping.json"
+      sh -c "apk add --no-cache curl && \
+            while ! nc -z elasticsearch 9200; do
+            echo 'Waiting for Elasticsearch...';
+            sleep 3;
+          done;
+          echo 'Elasticsearch is available. Applying index mapping...';
+          curl -X DELETE 'http://elasticsearch:9200/products';
+          curl -X PUT 'http://elasticsearch:9200/products/_mapping' \
+              -H 'Content-Type: application/json' \
+              -d @/app/mapping.json"
 
 volumes:
   postgres_data:
   es_data:
+  

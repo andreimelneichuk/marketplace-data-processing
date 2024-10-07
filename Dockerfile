@@ -2,6 +2,7 @@ FROM python:3.9-alpine
 
 RUN apk add --no-cache postgresql-dev gcc musl-dev postgresql-client libpq curl bash
 RUN apk add --no-cache openrc netcat-openbsd
+#RUN pip install --no-cache-dir flake8 black
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -11,6 +12,8 @@ COPY . /app
 COPY schema.sql /docker-entrypoint-initdb.d/
 
 WORKDIR /app
+
+#RUN flake8 /app --ignore=E501 && black --check /app
 
 CMD bash -c "while ! nc -z postgres 5432; do \
               echo 'Waiting for PostgreSQL...'; \

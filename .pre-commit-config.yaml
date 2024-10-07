@@ -1,0 +1,24 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.7.0 
+    hooks:
+      - id: black
+        name: Black - Python code formatter
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0 
+    hooks:
+      - id: flake8
+        name: Flake8 - Python code linter
+        additional_dependencies:
+          - flake8-bugbear
+        args:
+          - --max-line-length=88  
+
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.10.1 
+    hooks:
+      - id: isort
+        name: isort - Python import sorter
+        args:
+          - --profile=black 

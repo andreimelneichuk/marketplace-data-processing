@@ -1,1 +1,15 @@
+# Секреты
+.env
+
+# Данные
 /offers.xml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Логи и системные файлы
+*.log
+.DS_Store

@@ -2,13 +2,18 @@ import logging
 
 import psycopg2
 
+from config import settings
 from elasticsearch_client import ElasticsearchClient
 from postgres_client import PostgresClient
 
 
 def get_categories_mapping() -> dict:
     conn = psycopg2.connect(
-        host="postgres", database="marketplace", user="user", password="password"
+        host=settings.database_host,
+        port=settings.database_port,
+        database=settings.database_name,
+        user=settings.database_user,
+        password=settings.database_password,
     )
     cur = conn.cursor()
 

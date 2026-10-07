@@ -7,16 +7,18 @@ import psycopg2
 import psycopg2.extras
 from lxml import etree
 
+from config import settings
+
 
 class PostgresClient:
     def __init__(self):
         try:
             self.conn = psycopg2.connect(
-                dbname="marketplace",
-                user="user",
-                password="password",
-                host="postgres",
-                port="5432",
+                dbname=settings.database_name,
+                user=settings.database_user,
+                password=settings.database_password,
+                host=settings.database_host,
+                port=settings.database_port,
             )
             self.cursor = self.conn.cursor()
             logging.info("Подключение к базе данных установлено")
